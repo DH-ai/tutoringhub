@@ -72,10 +72,15 @@ WSGI_APPLICATION = 'backendtutorhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mytutoringdb',       # Replace with your PostgreSQL database name
+        'USER': 'gautam',   # Replace with your PostgreSQL username
+        'PASSWORD': '0penmypsql',   # Replace with your PostgreSQL password
+        'HOST': 'localhost',        # Or the hostname/IP of your PostgreSQL server
+        'PORT': '',                 # Leave empty for default port (5432)
     }
 }
 
