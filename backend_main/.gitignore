@@ -1,4 +1,3 @@
-
 # Virtual environment
 backend-env/
 
@@ -26,5 +25,4 @@ Thumbs.db
 
 # Editor directories and files
 .vscode/
-
 
