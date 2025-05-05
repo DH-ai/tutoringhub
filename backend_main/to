@@ -1,0 +1,6 @@
+1. jwt auth in users
+2. authenticating using jwt in course reg
+3. only teacher can create or edit courses
+4. messages in django
+5. courses id hash not integer id
+6. frontend only after above is sorted
