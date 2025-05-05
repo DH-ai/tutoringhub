@@ -42,3 +42,21 @@ DATABASES = {
 }
 
 ```
+
+
+
+Created a admin user 
+user - admin_user
+pass - 0pendhruv
+email- dhruvastro67@gmail.com
+
+
+Setup 
+users_service
+install drf
+
+setup course
+setup course reg  table M2m
+
+setup  authentication for users get a token
+install pip install djangorestframework-simplejwt

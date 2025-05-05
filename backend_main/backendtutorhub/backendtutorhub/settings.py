@@ -37,7 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users_service',
+    'course_service'
 ]
+INSTALLED_APPS += ['rest_framework','rest_framework_simplejwt',]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +52,22 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=240),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 ROOT_URLCONF = 'backendtutorhub.urls'
 
@@ -76,7 +96,7 @@ WSGI_APPLICATION = 'backendtutorhub.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mytutoringdb',       # Replace with your PostgreSQL database name
+        'NAME': 'mytutoringhubdb',       # Replace with your PostgreSQL database name
         'USER': 'gautam',   # Replace with your PostgreSQL username
         'PASSWORD': '0penmypsql',   # Replace with your PostgreSQL password
         'HOST': 'localhost',        # Or the hostname/IP of your PostgreSQL server
