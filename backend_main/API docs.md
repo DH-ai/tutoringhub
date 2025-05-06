@@ -14,6 +14,9 @@ Thought for a couple of seconds
 | **PUT**    | `/api/users/users/{pk}/`    | `{ "id", "username", "email", "role", "bio" }`         |
 | **PATCH**  | `/api/users/users/{pk}/`    | `{ "id", "username", "email", "role", "bio" }`         |
 | **DELETE** | `/api/users/users/{pk}/`    | *HTTP 204 No Content*                                  |
+| **GET** | `/api/users/users/public/`    | *List of all users id, username, email, role*                                  |
+
+
 
 
 ## course_service

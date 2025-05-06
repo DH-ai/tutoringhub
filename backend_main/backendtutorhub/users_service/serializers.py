@@ -48,6 +48,8 @@ class SignupSerializer(serializers.ModelSerializer):
         }
     
 class UserSerializer(serializers.ModelSerializer):
+
+
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'email', 'role', 'bio']
@@ -67,3 +69,8 @@ class UserSerializer(serializers.ModelSerializer):
             pw = validated_data.pop('password')
             instance.set_password(pw)
         return super().update(instance, validated_data)
+    
+class PublicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role']  # add any fields you want public

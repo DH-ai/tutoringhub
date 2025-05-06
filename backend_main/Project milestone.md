@@ -92,3 +92,18 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+filtering
+pip install django-filter
+
+
+INSTALLED_APPS = [
+    ...
+    'django_filters',
+]
+
+REST_FRAMEWORK = {
+    ...
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+

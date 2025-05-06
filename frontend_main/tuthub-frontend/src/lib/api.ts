@@ -10,6 +10,11 @@ interface Course {
   description: string;
   teacher: number;
   linktoplaylist?: string;
+  category?: string;
+  level?: string;
+  thumbnailUrl?: string;
+  price?: number;
+  students?: any[];
 }
 
 // Course API
@@ -181,21 +186,36 @@ export const MockData = {
       title: 'Introduction to Web Development',
       description: 'Learn the basics of HTML, CSS, and JavaScript to build modern websites.',
       teacher: 1,
-      linktoplaylist: 'https://www.youtube.com/playlist?list=abc123'
+      linktoplaylist: 'https://www.youtube.com/playlist?list=abc123',
+      category: 'programming',
+      level: 'beginner',
+      thumbnailUrl: 'https://example.com/web-dev.jpg',
+      price: 0,
+      students: []
     },
     {
       id: 2,
       title: 'Advanced React Techniques',
       description: 'Master React hooks, context API, and performance optimization.',
       teacher: 2,
-      linktoplaylist: 'https://www.youtube.com/playlist?list=def456'
+      linktoplaylist: 'https://www.youtube.com/playlist?list=def456',
+      category: 'programming',
+      level: 'advanced',
+      thumbnailUrl: 'https://example.com/react.jpg',
+      price: 29.99,
+      students: []
     },
     {
       id: 3,
       title: 'Python for Data Science',
       description: 'Learn Python programming for data analysis and visualization.',
       teacher: 3,
-      linktoplaylist: 'https://www.youtube.com/playlist?list=ghi789'
+      linktoplaylist: 'https://www.youtube.com/playlist?list=ghi789',
+      category: 'data',
+      level: 'intermediate',
+      thumbnailUrl: 'https://example.com/python.jpg',
+      price: 19.99,
+      students: []
     }
   ],
   users: [

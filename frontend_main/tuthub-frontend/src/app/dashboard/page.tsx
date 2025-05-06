@@ -47,6 +47,19 @@ export default function TeacherDashboard() {
     setTeacherCourses(prev => prev.filter(course => course.id !== courseId));
   };
 
+  // Handle tab navigation
+  const handleTabChange = (tab: string) => {
+    if (tab === 'students') {
+      router.push('/dashboard/students');
+      return;
+    }
+    if (tab === 'analytics') {
+      router.push('/dashboard/analytics');
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   return (
     <div className="py-8 md:py-12">
       <div className="container mx-auto px-4">
@@ -113,7 +126,7 @@ export default function TeacherDashboard() {
         </div>
 
         {/* Dashboard Tabs */}
-        <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs defaultValue="courses" value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="courses">My Courses</TabsTrigger>
             <TabsTrigger value="students">My Students</TabsTrigger>
@@ -125,9 +138,11 @@ export default function TeacherDashboard() {
           <TabsContent value="courses">
             <div className="mb-6 flex justify-between items-center">
               <h2 className="text-2xl font-bold">My Courses</h2>
-              <Button className="flex items-center gap-2">
-                <FaPlus size={14} />
-                <span>Create New Course</span>
+              <Button className="flex items-center gap-2" asChild>
+                <Link href="/dashboard/create-course">
+                  <FaPlus size={14} />
+                  <span>Create New Course</span>
+                </Link>
               </Button>
             </div>
             
@@ -150,9 +165,11 @@ export default function TeacherDashboard() {
                         <Link href={`/courses/${course.id}`}>View</Link>
                       </Button>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <FaEdit size={12} />
-                          <span>Edit</span>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
+                          <Link href={`/dashboard/edit-course/${course.id}`}>
+                            <FaEdit size={12} />
+                            <span>Edit</span>
+                          </Link>
                         </Button>
                         <Button 
                           variant="destructive" 
@@ -175,9 +192,11 @@ export default function TeacherDashboard() {
                   <p className="text-muted-foreground mb-4">
                     You haven't created any courses yet. Get started by creating your first course.
                   </p>
-                  <Button className="flex items-center gap-2">
-                    <FaPlus size={14} />
-                    <span>Create First Course</span>
+                  <Button className="flex items-center gap-2" asChild>
+                    <Link href="/dashboard/create-course">
+                      <FaPlus size={14} />
+                      <span>Create First Course</span>
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>

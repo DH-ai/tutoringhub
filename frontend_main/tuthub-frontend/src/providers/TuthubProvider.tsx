@@ -178,7 +178,7 @@ export const TuthubProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       const response = await axios.patch(
-        `${API_URL}/users/users/${authState.user.id}/`,
+        `${API_URL}/users/users/${authState.user.username}/`,
         data,
         {
           headers: {

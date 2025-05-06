@@ -3,10 +3,12 @@
 
 from rest_framework import viewsets, status
 from .models import User
-from .serializers import SignupSerializer, UserSerializer
+from .serializers import SignupSerializer, UserSerializer, PublicUserSerializer
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
 class SignupView(APIView):
     authentication_classes = []  
@@ -33,3 +35,9 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+class PublicUserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = PublicUserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['username','role',]  # or any fields you want
+    permission_classes = []  # allow any

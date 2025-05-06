@@ -1,25 +1,10 @@
-1. jwt auth in users
-2. authenticating using jwt in course reg
-3. only teacher can create or edit courses
-4. messages in django
-5. courses id hash not integer id
+1. course created endpoint for me to see my registered course/ my created course(forteachers)
+2. messages fuck krna hai
+3. frontend integerate with backend
+4.vercel wagera pe backend move krna hai 
+5. frontend bhi host krna hai raat t
 6. frontend only after above is sorted
+7. showing number of register students to teacher
+8. teacher can kick student out
+9. total number of students registered under teacher sum across all courses
 
-
-
-returning this {
-    "username": "teacher1",
-    "last_login": null,
-    "is_superuser": false,
-    "first_name": "",
-    "last_name": "",
-    "email": "",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2025-05-06T00:43:44.847570Z",
-    "bio": "dsds",
-    "role": "teacher",
-    "groups": [],
-    "user_permissions": []
-} 
-while creating a new user i want token bc

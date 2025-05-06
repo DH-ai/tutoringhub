@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'message_service',
+    'django_filters',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,6 +84,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 ROOT_URLCONF = 'backendtutorhub.urls'
@@ -129,7 +132,7 @@ DATABASES = {
         'PORT': '',                 # Leave empty for default port (5432)
     }
 }
-
+AUTH_USER_MODEL = 'users_service.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
