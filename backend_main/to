@@ -1,10 +1,7 @@
-1. course created endpoint for me to see my registered course/ my created course(forteachers)
+1. course created endpoint for me to see my registered course/
 2. messages fuck krna hai
 3. frontend integerate with backend
 4.vercel wagera pe backend move krna hai 
-5. frontend bhi host krna hai raat t
-6. frontend only after above is sorted
 7. showing number of register students to teacher
 8. teacher can kick student out
-9. total number of students registered under teacher sum across all courses
-
+10. student tab listing students registered under the course

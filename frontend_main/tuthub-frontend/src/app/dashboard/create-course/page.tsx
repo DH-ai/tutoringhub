@@ -19,11 +19,8 @@ export default function CreateCoursePage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
     linktoplaylist: '',
-    thumbnailUrl: '',
-    price: '0',
-    level: 'beginner'
+    teacher: authState.user?.id
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,10 +56,11 @@ export default function CreateCoursePage() {
 
     try {
       // Validate form
-      if (!formData.title || !formData.description || !formData.category) {
+      if (!formData.title || !formData.description) {
         throw new Error('Please fill in all required fields');
       }
 
+      const userData = localStorage.getItem("tuthub_user");
       // Make API call to the backend
       const response = await fetch('http://127.0.0.1:8000/api/courses/', {
         method: 'POST',
@@ -71,6 +69,8 @@ export default function CreateCoursePage() {
           'Authorization': `Bearer ${authState.token}`
         },
         body: JSON.stringify(formData)
+
+
       });
 
       if (!response.ok) {
@@ -140,8 +140,11 @@ export default function CreateCoursePage() {
                   required
                 />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+
+              {/* No category for now and difficulty level*/}
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
                   <Select 
@@ -182,7 +185,7 @@ export default function CreateCoursePage() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="linktoplaylist">Video Playlist URL</Label>
@@ -197,8 +200,8 @@ export default function CreateCoursePage() {
                   Provide a playlist link to your course videos (YouTube, Vimeo, etc.)
                 </p>
               </div>
-              
-              <div className="space-y-2">
+              {/* No thumbnailUrl and price for now*/}
+              {/* <div className="space-y-2">
                 <Label htmlFor="thumbnailUrl">Thumbnail Image URL</Label>
                 <Input
                   id="thumbnailUrl"
@@ -221,7 +224,7 @@ export default function CreateCoursePage() {
                   value={formData.price}
                   onChange={handleChange}
                 />
-              </div>
+              </div> */}
               
               <div className="flex justify-end gap-4 pt-4">
                 <Button
@@ -238,6 +241,9 @@ export default function CreateCoursePage() {
                   {isSubmitting ? 'Creating Course...' : 'Create Course'}
                 </Button>
               </div>
+
+
+
             </form>
           </CardContent>
         </Card>

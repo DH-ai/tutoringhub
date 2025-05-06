@@ -22,7 +22,38 @@ import { MockData } from '@/lib/api';
 export default function TeacherDashboard() {
   const router = useRouter();
   const { authState } = useTuthub();
-  const [teacherCourses, setTeacherCourses] = useState<any[]>([]);
+  interface Course {
+    id: number;
+    title: string;
+    description: string;
+    linktoplaylist?: string;
+    teacher: number;
+    students?: any[];
+  }
+  const [teacherCourses, setTeacherCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    const fetchTeacherCourses = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/courses/', {
+          headers: {
+            'Authorization': `Bearer ${authState.token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch courses');
+        }
+        const courses = await response.json();
+        setTeacherCourses(courses.filter((course: Course) => course.teacher === authState.user?.id));
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    if (authState.isAuthenticated && authState.user?.role === 'teacher') {
+      fetchTeacherCourses();
+    }
+  }, [authState]);
   const [activeTab, setActiveTab] = useState('courses');
 
   useEffect(() => {
@@ -31,20 +62,28 @@ export default function TeacherDashboard() {
       router.push('/');
       return;
     }
-
-    // Load teacher's courses - would be an API call in a real app
-    if (authState.user) {
-      const userCourses = MockData.courses.filter(
-        course => course.teacher === authState.user?.id
-      );
-      setTeacherCourses(userCourses);
-    }
   }, [authState, router]);
 
-  // Function to handle course deletion (mock)
-  const handleDeleteCourse = (courseId: number) => {
-    // In a real app, this would call an API
-    setTeacherCourses(prev => prev.filter(course => course.id !== courseId));
+  // Function to handle course deletion
+  const handleDeleteCourse = async (courseId: number) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${authState.token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete course');
+      }
+      
+      // Remove the course from state
+      setTeacherCourses(prev => prev.filter(course => course.id !== courseId));
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      // Could add toast notification here
+    }
   };
 
   // Handle tab navigation
@@ -100,29 +139,7 @@ export default function TeacherDashboard() {
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground mb-1">Unread Messages</p>
-                <p className="text-3xl font-bold">5</p>
-              </div>
-              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <FaEnvelope className="h-6 w-6 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground mb-1">Course Views</p>
-                <p className="text-3xl font-bold">142</p>
-              </div>
-              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <FaChartLine className="h-6 w-6 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* Dashboard Tabs */}
@@ -130,8 +147,7 @@ export default function TeacherDashboard() {
           <TabsList className="grid grid-cols-4 mb-8">
             <TabsTrigger value="courses">My Courses</TabsTrigger>
             <TabsTrigger value="students">My Students</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+
           </TabsList>
           
           {/* Courses Tab */}
@@ -154,16 +170,23 @@ export default function TeacherDashboard() {
                       <CardTitle>{course.title}</CardTitle>
                       <CardDescription className="line-clamp-2">{course.description}</CardDescription>
                     </CardHeader>
-                    <CardContent>
+
+                    {/* TODO: Add students count */}
+                    {/* <CardContent>
                       <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Students: {course.students?.length || 0}</span>
                         <span>Created: {new Date().toLocaleDateString()}</span>
                       </div>
-                    </CardContent>
+                    </CardContent> */}
                     <CardFooter className="flex justify-between">
+
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/courses/${course.id}`}>View</Link>
                       </Button>
+                      
+                      
+                      
+                      
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
                           <Link href={`/dashboard/edit-course/${course.id}`}>
@@ -219,38 +242,7 @@ export default function TeacherDashboard() {
             </Card>
           </TabsContent>
           
-          {/* Messages Tab */}
-          <TabsContent value="messages">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Messages</h2>
-            </div>
-            
-            <Card className="bg-muted/30">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-xl font-medium mb-2">Message Center</h3>
-                <p className="text-muted-foreground mb-4">
-                  This section will display messages from your students.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* Analytics Tab */}
-          <TabsContent value="analytics">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Course Analytics</h2>
-            </div>
-            
-            <Card className="bg-muted/30">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-xl font-medium mb-2">Performance Analytics</h3>
-                <p className="text-muted-foreground mb-4">
-                  This section will show analytics for your courses, including views, 
-                  engagement metrics, and student progress.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
+
         </Tabs>
       </div>
     </div>

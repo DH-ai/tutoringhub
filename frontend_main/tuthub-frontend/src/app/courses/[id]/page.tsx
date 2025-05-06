@@ -21,47 +21,98 @@ const CourseDetailPage = () => {
 
   // Simulate fetching course details
   useEffect(() => {
-    const fetchCourse = () => {
+    const fetchCourse = async () => {
       setLoading(true);
       
-      // Find the course in mock data
-      const foundCourse = MockData.courses.find(c => c.id === courseId);
-      
-      if (foundCourse) {
-        setCourse(foundCourse);
+      try {
+        // Fetch course data from the API
+        const courseResponse = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}`, {
+          headers: {
+            'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+          }
+        });
         
-        // Find the teacher of this course
-        const foundTeacher = MockData.users.find(u => u.id === foundCourse.teacher);
-        if (foundTeacher) {
-          setTeacher(foundTeacher);
+        if (!courseResponse.ok) {
+          throw new Error('Failed to fetch course');
         }
         
-        // Simulate checking if user is enrolled (would come from API in real app)
-        setEnrolled(Math.random() > 0.5); // Random for demo purposes
+        const courseData = await courseResponse.json();
+        setCourse(courseData);
+        
+        // Fetch teacher data if needed
+        if (courseData.teacher) {
+          const teacherResponse = await fetch(`http://127.0.0.1:8000/api/users/${courseData.teacher}`, {
+            headers: {
+              'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+            }
+          });
+          
+          if (teacherResponse.ok) {
+            const teacherData = await teacherResponse.json();
+            setTeacher(teacherData);
+          }
+        }
+        
+        // Check if user is enrolled
+        if (authState.isAuthenticated && authState.user) {
+          // You'll need to implement this endpoint on your backend
+          const enrollmentResponse = await fetch(`http://127.0.0.1:8000/api/enrollments/check/?user=${authState.user.id}&course=${courseId}`, {
+            headers: {
+              'Authorization': `Bearer ${authState.token}`,
+            }
+          });
+          
+          if (enrollmentResponse.ok) {
+            const enrollmentData = await enrollmentResponse.json();
+            setEnrolled(enrollmentData.enrolled);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching course data:', error);
+        // Let the error state be handled by the UI
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
     
     fetchCourse();
-  }, [courseId]);
+  }, [courseId, authState]);
 
   // Handle enrollment
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
     if (!authState.isAuthenticated) {
       toast.error('Please sign in to enroll in this course');
       return;
     }
 
-    // Simulate enrollment API call
     setLoading(true);
     
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/enrollments/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authState.token}`
+        },
+        body: JSON.stringify({
+          user: authState.user?.id,
+          course: courseId
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to enroll');
+      }
+      
       setEnrolled(true);
-      setLoading(false);
       toast.success('Successfully enrolled in the course!');
-    }, 1000);
+    } catch (error) {
+      console.error('Error enrolling in course:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to enroll in course');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle sending a message to the teacher
