@@ -1,221 +1,239 @@
 "use client";
 
-import Link from "next/link";
-import { BookOpen, Calendar, Users, Clock, BarChart, BookMarked, Bell, MessageSquare } from "lucide-react";
-import MainLayout from "@/components/layout/MainLayout";
-import StatsCard from "@/components/dashboard/StatsCard";
-import CourseCard from "@/components/courses/CourseCard";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { 
+  FaPlus, 
+  FaEdit, 
+  FaTrash, 
+  FaUser, 
+  FaBook, 
+  FaChartLine, 
+  FaEnvelope 
+} from 'react-icons/fa';
 
-// Mock data
-const mockCourses = [
-  {
-    id: "1",
-    title: "Introduction to Web Development",
-    description: "Learn the fundamentals of web development, including HTML, CSS, and JavaScript.",
-    instructor: "John Smith",
-    thumbnailUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    enrollmentCount: 342,
-    duration: "8 weeks",
-    startDate: "May 15",
-    category: "Development",
-    progress: 75,
-  },
-  {
-    id: "2",
-    title: "Data Science Essentials",
-    description: "Master the core concepts of data science, from data analysis to machine learning.",
-    instructor: "Sarah Johnson",
-    thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    enrollmentCount: 521,
-    duration: "10 weeks",
-    startDate: "June 1",
-    category: "Data Science",
-    progress: 45,
-  },
-  {
-    id: "3",
-    title: "Business Management Fundamentals",
-    description: "Discover key principles of business management and leadership strategies.",
-    instructor: "David Chen",
-    thumbnailUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40",
-    enrollmentCount: 289,
-    duration: "6 weeks",
-    startDate: "May 20",
-    category: "Business",
-    progress: 20,
-  },
-];
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTuthub } from '@/providers/TuthubProvider';
+import { MockData } from '@/lib/api';
 
-const upcomingEvents = [
-  {
-    id: "1",
-    title: "Project Submission Deadline",
-    course: "Introduction to Web Development",
-    date: "May 28, 2023",
-    time: "11:59 PM",
-  },
-  {
-    id: "2",
-    title: "Live Q&A Session",
-    course: "Data Science Essentials",
-    date: "May 25, 2023",
-    time: "3:00 PM",
-  },
-  {
-    id: "3",
-    title: "Group Discussion",
-    course: "Business Management Fundamentals",
-    date: "May 30, 2023",
-    time: "2:00 PM",
-  },
-];
+export default function TeacherDashboard() {
+  const router = useRouter();
+  const { authState } = useTuthub();
+  const [teacherCourses, setTeacherCourses] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('courses');
 
-const notifications = [
-  {
-    id: "1",
-    title: "New course material available",
-    course: "Introduction to Web Development",
-    time: "2 hours ago",
-  },
-  {
-    id: "2",
-    title: "Assignment graded",
-    course: "Data Science Essentials",
-    time: "Yesterday",
-  },
-  {
-    id: "3",
-    title: "New announcement",
-    course: "Business Management Fundamentals",
-    time: "2 days ago",
-  },
-];
+  useEffect(() => {
+    // Redirect non-teachers away from this page
+    if (!authState.isAuthenticated || authState.user?.role !== 'teacher') {
+      router.push('/');
+      return;
+    }
 
-export default function Dashboard() {
+    // Load teacher's courses - would be an API call in a real app
+    if (authState.user) {
+      const userCourses = MockData.courses.filter(
+        course => course.teacher === authState.user?.id
+      );
+      setTeacherCourses(userCourses);
+    }
+  }, [authState, router]);
+
+  // Function to handle course deletion (mock)
+  const handleDeleteCourse = (courseId: number) => {
+    // In a real app, this would call an API
+    setTeacherCourses(prev => prev.filter(course => course.id !== courseId));
+  };
+
   return (
-    <MainLayout>
-      <div className="container py-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back, John! Track your progress and manage your courses.</p>
-          </div>
-          <div className="mt-4 md:mt-0">
-            <Link href="/courses" className="btn btn-primary px-4 py-2">
-              Browse Courses
-            </Link>
-          </div>
+    <div className="py-8 md:py-12">
+      <div className="container mx-auto px-4">
+        {/* Dashboard Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Teacher Dashboard</h1>
+          <p className="text-muted-foreground text-lg">
+            Manage your courses, students, and profile
+          </p>
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <StatsCard 
-            title="Enrolled Courses" 
-            value="12" 
-            icon={<BookOpen className="h-5 w-5" />}
-            trend={{ value: 10, isPositive: true }}
-          />
-          <StatsCard 
-            title="Hours Spent" 
-            value="86" 
-            description="This month" 
-            icon={<Clock className="h-5 w-5" />}
-            trend={{ value: 23, isPositive: true }}
-          />
-          <StatsCard 
-            title="Completed Courses" 
-            value="8" 
-            icon={<BookMarked className="h-5 w-5" />}
-            trend={{ value: 5, isPositive: true }}
-          />
-          <StatsCard 
-            title="Certificates Earned" 
-            value="6" 
-            icon={<BarChart className="h-5 w-5" />}
-          />
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* In Progress Courses */}
-          <div className="lg:col-span-2">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">In Progress</h2>
-              <Link href="/courses?status=in-progress" className="text-sm text-primary hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {mockCourses.map((course) => (
-                <CourseCard key={course.id} {...course} />
-              ))}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div>
-            {/* Upcoming Events */}
-            <div className="card mb-8">
-              <div className="p-5 border-b">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Upcoming Events</h3>
-                  <Link href="/calendar" className="text-sm text-primary hover:underline">
-                    View Calendar
-                  </Link>
-                </div>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-muted-foreground mb-1">Total Courses</p>
+                <p className="text-3xl font-bold">{teacherCourses.length}</p>
               </div>
-              <div className="p-0">
-                {upcomingEvents.map((event) => (
-                  <div key={event.id} className="p-4 border-b last:border-0">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-muted text-primary mt-1">
-                        <Calendar className="h-4 w-4" />
+              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <FaBook className="h-6 w-6 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-muted-foreground mb-1">Total Students</p>
+                <p className="text-3xl font-bold">
+                  {/* This would be a real count in an actual app */}
+                  {teacherCourses.reduce((acc, course) => acc + (course.students?.length || 0), 0)}
+                </p>
+              </div>
+              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <FaUser className="h-6 w-6 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-muted-foreground mb-1">Unread Messages</p>
+                <p className="text-3xl font-bold">5</p>
+              </div>
+              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <FaEnvelope className="h-6 w-6 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+              <div>
+                <p className="text-muted-foreground mb-1">Course Views</p>
+                <p className="text-3xl font-bold">142</p>
+              </div>
+              <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <FaChartLine className="h-6 w-6 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Dashboard Tabs */}
+        <Tabs defaultValue="courses" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-4 mb-8">
+            <TabsTrigger value="courses">My Courses</TabsTrigger>
+            <TabsTrigger value="students">My Students</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+          
+          {/* Courses Tab */}
+          <TabsContent value="courses">
+            <div className="mb-6 flex justify-between items-center">
+              <h2 className="text-2xl font-bold">My Courses</h2>
+              <Button className="flex items-center gap-2">
+                <FaPlus size={14} />
+                <span>Create New Course</span>
+              </Button>
+            </div>
+            
+            {teacherCourses.length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {teacherCourses.map(course => (
+                  <Card key={course.id}>
+                    <CardHeader>
+                      <CardTitle>{course.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>Students: {course.students?.length || 0}</span>
+                        <span>Created: {new Date().toLocaleDateString()}</span>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-sm">{event.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{event.course}</p>
-                        <div className="mt-2 flex items-center text-xs text-muted-foreground">
-                          <span className="font-medium">{event.date}</span>
-                          <span className="mx-1">•</span>
-                          <span>{event.time}</span>
-                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/courses/${course.id}`}>View</Link>
+                      </Button>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex items-center gap-1">
+                          <FaEdit size={12} />
+                          <span>Edit</span>
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          className="flex items-center gap-1"
+                          onClick={() => handleDeleteCourse(course.id)}
+                        >
+                          <FaTrash size={12} />
+                          <span>Delete</span>
+                        </Button>
                       </div>
-                    </div>
-                  </div>
+                    </CardFooter>
+                  </Card>
                 ))}
               </div>
+            ) : (
+              <Card className="bg-muted/30">
+                <CardContent className="p-6 text-center">
+                  <h3 className="text-xl font-medium mb-2">No courses yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    You haven't created any courses yet. Get started by creating your first course.
+                  </p>
+                  <Button className="flex items-center gap-2">
+                    <FaPlus size={14} />
+                    <span>Create First Course</span>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+          
+          {/* Students Tab */}
+          <TabsContent value="students">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">My Students</h2>
             </div>
-
-            {/* Recent Notifications */}
-            <div className="card">
-              <div className="p-5 border-b">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Recent Notifications</h3>
-                  <Link href="/notifications" className="text-sm text-primary hover:underline">
-                    View All
-                  </Link>
-                </div>
-              </div>
-              <div className="p-0">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className="p-4 border-b last:border-0">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-muted text-primary mt-1">
-                        <Bell className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm">{notification.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{notification.course}</p>
-                        <p className="mt-2 text-xs text-muted-foreground">{notification.time}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            
+            <Card className="bg-muted/30">
+              <CardContent className="p-6 text-center">
+                <h3 className="text-xl font-medium mb-2">Student Management</h3>
+                <p className="text-muted-foreground mb-4">
+                  This section will show enrolled students across all your courses.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* Messages Tab */}
+          <TabsContent value="messages">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Messages</h2>
             </div>
-          </div>
-        </div>
+            
+            <Card className="bg-muted/30">
+              <CardContent className="p-6 text-center">
+                <h3 className="text-xl font-medium mb-2">Message Center</h3>
+                <p className="text-muted-foreground mb-4">
+                  This section will display messages from your students.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Course Analytics</h2>
+            </div>
+            
+            <Card className="bg-muted/30">
+              <CardContent className="p-6 text-center">
+                <h3 className="text-xl font-medium mb-2">Performance Analytics</h3>
+                <p className="text-muted-foreground mb-4">
+                  This section will show analytics for your courses, including views, 
+                  engagement metrics, and student progress.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-    </MainLayout>
+    </div>
   );
 } 

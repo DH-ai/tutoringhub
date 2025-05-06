@@ -1,190 +1,158 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { BookOpen, Users, Award, Calendar, Clock, Check, CheckCircle2, BarChart, Layout, Bookmark } from "lucide-react";
-import MainLayout from "@/components/layout/MainLayout";
+import React from 'react';
+import Link from 'next/link';
+import { FaSearch, FaGraduationCap, FaChalkboardTeacher, FaComments } from 'react-icons/fa';
+import { Button } from '@/components/ui/button';
+import CourseCard from '@/components/course/CourseCard';
+import { MockData } from '@/lib/api';
 
-const features = [
-  {
-    name: "Comprehensive Course Library",
-    description: "Access thousands of courses across various subjects and disciplines.",
-    icon: <BookOpen className="h-6 w-6" />,
-  },
-  {
-    name: "Interactive Learning",
-    description: "Engage with course materials through quizzes, assignments, and discussions.",
-    icon: <Users className="h-6 w-6" />,
-  },
-  {
-    name: "Progress Tracking",
-    description: "Monitor your learning journey with detailed progress analytics.",
-    icon: <BarChart className="h-6 w-6" />,
-  },
-  {
-    name: "Certification",
-    description: "Earn certificates upon successful course completion to showcase your skills.",
-    icon: <Award className="h-6 w-6" />,
-  },
-  {
-    name: "Flexible Learning",
-    description: "Learn at your own pace with on-demand access to course content.",
-    icon: <Clock className="h-6 w-6" />,
-  },
-  {
-    name: "Seamless Organization",
-    description: "Keep track of assignments, deadlines, and events with built-in calendar.",
-    icon: <Calendar className="h-6 w-6" />,
-  },
-];
+export default function HomePage() {
+  // Featured courses - normally would come from an API call
+  const featuredCourses = MockData.courses.slice(0, 3);
+  
+  // Featured teachers - normally would come from an API call
+  const featuredTeachers = MockData.users.filter(user => user.role === 'teacher').slice(0, 3);
 
-const testimonials = [
-  {
-    content: "This platform has transformed how I approach learning. The courses are well-structured and the UI is incredibly intuitive.",
-    author: "Sarah Johnson",
-    role: "Student",
-  },
-  {
-    content: "As an educator, I've found this platform to be the perfect tool for engaging my students and tracking their progress.",
-    author: "Dr. Michael Chen",
-    role: "Professor",
-  },
-  {
-    content: "The flexibility of this system allows me to continue my education while maintaining my full-time job. Game changer!",
-    author: "Alex Rodriguez",
-    role: "Professional",
-  },
-];
-
-export default function Home() {
   return (
-    <MainLayout>
+    <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-white to-muted dark:from-card dark:to-background py-20">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
-                Empower Your Learning Journey with <span className="text-primary">LMSystem</span>
-              </h1>
-              <p className="mt-6 text-lg text-muted-foreground">
-                A modern learning management system designed to make education accessible, 
-                engaging, and effective for both students and educators.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                <Link href="/courses" className="btn btn-primary px-6 py-3">
-                  Explore Courses
-                </Link>
-                <Link href="/dashboard" className="btn btn-outline px-6 py-3">
-                  Go to Dashboard
-                </Link>
-              </div>
-              <div className="mt-10">
-                <p className="text-sm font-medium text-muted-foreground mb-4">Trusted by leading institutions</p>
-                <div className="flex flex-wrap gap-8 items-center">
-                  <div className="h-8 w-20 bg-muted rounded"></div>
-                  <div className="h-8 w-24 bg-muted rounded"></div>
-                  <div className="h-8 w-20 bg-muted rounded"></div>
-                  <div className="h-8 w-24 bg-muted rounded"></div>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="aspect-w-4 aspect-h-3 rounded-xl overflow-hidden shadow-2xl">
-                <div className="bg-muted h-full w-full">
-                  {/* Placeholder for hero image */}
-                  <div className="flex h-full items-center justify-center bg-gradient-to-r from-blue-500/20 to-purple-500/20">
-                    <Layout className="h-24 w-24 text-primary opacity-50" />
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -bottom-6 -right-6 bg-card rounded-lg p-4 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-white">
-                    <BookOpen className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Over 10,000 courses</p>
-                    <p className="text-xs text-muted-foreground">For all skill levels</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="bg-gradient-to-b from-primary/10 to-background py-16 md:py-24">
+        <div className="container mx-auto px-4 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Learn From The Best Teachers</h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
+            Connect with experienced teachers, access quality courses, and elevate your learning journey with TutHub.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button size="lg" asChild>
+              <Link href="/courses">Browse Courses</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/teachers">Find Teachers</Link>
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Features that empower learning</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Everything you need to create, manage, and participate in educational experiences.
-            </p>
-          </div>
-          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
-            {features.map((feature, index) => (
-              <div key={index} className="group relative">
-                <div className="p-4 rounded-lg bg-muted inline-flex mb-4 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  {feature.icon}
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.name}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Categories Section */}
-      <section className="py-20 bg-muted dark:bg-card">
-        <div className="container mx-auto px-6 lg:px-8">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-12">Browse by category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { name: "Development", icon: <Layout className="h-6 w-6" /> },
-              { name: "Business", icon: <BarChart className="h-6 w-6" /> },
-              { name: "Design", icon: <Bookmark className="h-6 w-6" /> },
-              { name: "Marketing", icon: <Users className="h-6 w-6" /> },
-              { name: "Health", icon: <CheckCircle2 className="h-6 w-6" /> },
-              { name: "Science", icon: <BookOpen className="h-6 w-6" /> },
-            ].map((category, index) => (
-              <Link
-                key={index}
-                href={`/courses?category=${category.name}`}
-                className="flex flex-col items-center justify-center p-6 rounded-lg bg-card hover:bg-primary hover:text-white transition-colors text-center gap-3"
-              >
-                {category.icon}
-                <span className="font-medium">{category.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">What our users say</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Discover how LMSystem is transforming education for students and educators alike.
-            </p>
-          </div>
-          
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Choose TutHub?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="card p-8">
-                <p className="text-lg mb-6">{testimonial.content}</p>
-                <div className="flex items-center">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mr-3">
-                    <span className="text-sm font-medium">{testimonial.author.substring(0, 2)}</span>
+            <div className="flex flex-col items-center text-center p-6 bg-background rounded-lg shadow-sm">
+              <div className="bg-primary/10 p-4 rounded-full mb-4">
+                <FaChalkboardTeacher className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Expert Teachers</h3>
+              <p className="text-muted-foreground">
+                Learn from qualified and experienced teachers who are passionate about their subjects.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center p-6 bg-background rounded-lg shadow-sm">
+              <div className="bg-primary/10 p-4 rounded-full mb-4">
+                <FaGraduationCap className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Quality Courses</h3>
+              <p className="text-muted-foreground">
+                Access a wide range of high-quality courses with structured learning materials.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center p-6 bg-background rounded-lg shadow-sm">
+              <div className="bg-primary/10 p-4 rounded-full mb-4">
+                <FaComments className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Direct Communication</h3>
+              <p className="text-muted-foreground">
+                Interact directly with teachers to clear doubts and get personalized guidance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Courses Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">Featured Courses</h2>
+            <Link href="/courses" className="text-primary font-medium hover:underline">
+              View all courses →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredCourses.map((course) => {
+              const teacherData = MockData.users.find(user => user.id === course.teacher);
+              return (
+                <CourseCard
+                  key={course.id}
+                  id={course.id}
+                  title={course.title}
+                  description={course.description}
+                  teacher={{
+                    id: teacherData?.id || 0,
+                    username: teacherData?.username || 'Unknown Teacher',
+                  }}
+                  linktoplaylist={course.linktoplaylist}
+                  onEnroll={() => console.log(`Would enroll in course ${course.id}`)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Search Banner */}
+      <section className="py-12 bg-primary text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">Looking for a specific course?</h2>
+          <div className="max-w-md mx-auto">
+            <div className="relative flex items-center border-2 border-white rounded-md">
+              <FaSearch className="absolute left-3 text-primary z-10 text-white" />
+              <input 
+                type="text"
+                placeholder="Search courses or teachers..."
+                className="w-full pl-10 pr-4 rounded-l-md focus:outline-none bg-white text-black"
+              />
+              <Button
+                className="px-6 rounded-r-md"
+                variant="secondary"
+                onClick={() => console.log('Search clicked')}
+              >
+                Search
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Teachers Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">Meet Our Teachers</h2>
+            <Link href="/teachers" className="text-primary font-medium hover:underline">
+              View all teachers →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredTeachers.map((teacher) => (
+              <div key={teacher.id} className="bg-background rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="bg-primary/10 h-16 w-16 rounded-full flex items-center justify-center text-primary font-semibold text-xl">
+                      {teacher.username.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-xl">{teacher.username}</h3>
+                      <p className="text-muted-foreground">{teacher.role}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">{testimonial.author}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
+                  <p className="text-muted-foreground mb-4">{teacher.bio}</p>
+                  <Button variant="outline" size="sm" asChild className="w-full">
+                    <Link href={`/teachers/${teacher.id}`}>
+                      View Profile
+                    </Link>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -193,19 +161,22 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Ready to start your learning journey?</h2>
-          <p className="mt-4 text-lg max-w-2xl mx-auto opacity-90">
-            Join thousands of learners already benefiting from our platform. Get started today!
+      <section className="py-16 bg-primary/10">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-6">Ready to Start Learning?</h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+            Join thousands of students who are already learning with TutHub. Register now to start your learning journey.
           </p>
-          <div className="mt-10">
-            <Link href="/courses" className="btn px-8 py-3 bg-white text-primary hover:bg-opacity-90">
-              Browse Courses
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <Link href="/auth/register">Get Started</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/courses">Explore Courses</Link>
+            </Button>
           </div>
-    </div>
+        </div>
       </section>
-    </MainLayout>
+    </div>
   );
 }

@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'users_service',
     'course_service',
     'channels',
+    'corsheaders',
     'message_service',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,8 +49,12 @@ INSTALLED_APPS += ['rest_framework','rest_framework_simplejwt',]
 ASGI_APPLICATION = 'backendtutorhub.asgi.application'
 
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True # Allow credentials to be sent with requests
 
 MIDDLEWARE = [
+    "http://localhost:3000",  # React or Next frontend
+    # "https://your-frontend-domain.com",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

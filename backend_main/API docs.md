@@ -5,7 +5,7 @@ Thought for a couple of seconds
 
 | Method     | URL                         | Returns                                                |
 | ---------- | --------------------------- | ------------------------------------------------------ |
-| **POST**   | `/api/users/signup/`        | `{ "username", "email", "role", "access", "refresh" }` |
+| **POST**   | `/api/users/signup/`        | `{ "username", "email", "role", "access", "refresh"    }` |
 | **POST**   | `/api/users/token/`         | `{ "access", "refresh" }`                              |
 | **POST**   | `/api/users/token/refresh/` | `{ "access" }`                                         |
 | **GET**    | `/api/users/users/`         | `[{ "id", "username", "email", "role", "bio" }, …]`    |

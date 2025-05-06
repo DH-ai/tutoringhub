@@ -65,3 +65,30 @@ install pip install djangorestframework-simplejwt
 Creating message service
 
 using django channels, redis, daphane as asgi server
+
+
+Implemented CORS (Cross-Origin Resource Sharing)
+
+# Install django-cors-headers
+pip install django-cors-headers
+
+# Add to INSTALLED_APPS in settings.py
+INSTALLED_APPS = [
+    ...
+    'corsheaders',
+]
+
+# Add middleware in settings.py
+MIDDLEWARE = [
+    ...
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+# Configure CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React frontend
+]
+
+CORS_ALLOW_CREDENTIALS = True
+

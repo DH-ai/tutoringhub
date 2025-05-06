@@ -1,10 +1,10 @@
 # Compiled Python files
 *.pyc
-__pycache__/
+*__pycache__/
 
 # Database files (if using SQLite)
 db.sqlite3
-
+*migrations/
 # Media and static files generated during development
 media/
 static/
@@ -22,4 +22,5 @@ Thumbs.db
 
 # Editor directories and files
 .vscode/
+backendenv/
 

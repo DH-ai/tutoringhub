@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -35,6 +37,7 @@ INSTALLED_APPS = [
     'users_service',
     'course_service',
     'channels',
+    'corsheaders',
     'message_service',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,9 +50,13 @@ INSTALLED_APPS += ['rest_framework','rest_framework_simplejwt',]
 
 ASGI_APPLICATION = 'backendtutorhub.asgi.application'
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React frontend
+]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
