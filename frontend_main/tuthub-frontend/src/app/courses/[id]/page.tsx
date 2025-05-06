@@ -28,7 +28,7 @@ const CourseDetailPage = () => {
         // Fetch course data from the API
         const courseResponse = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}`, {
           headers: {
-            'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+            'Authorization': authState.token `Bearer ${authState.token}` : '',
           }
         });
         

@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-vv=apognmqcc!(+ogte0e6lcsx9+%@-4a1mko+!!xq(lof=5s$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']# for testing will change
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -122,15 +123,27 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
+## meed to set these  render hostname and database url in render
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mytutoringhubdb',       # Replace with your PostgreSQL database name
-        'USER': 'gautam',   # Replace with your PostgreSQL username
-        'PASSWORD': '0penmypsql',   # Replace with your PostgreSQL password
-        'HOST': 'localhost',        # Or the hostname/IP of your PostgreSQL server
-        'PORT': '',                 # Leave empty for default port (5432)
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
+
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'mytutoringhubdb',       # Replace with your PostgreSQL database name
+    #     'USER': 'gautam',   # Replace with your PostgreSQL username
+    #     'PASSWORD': '0penmypsql',   # Replace with your PostgreSQL password
+    #     'HOST': 'localhost',        # Or the hostname/IP of your PostgreSQL server
+    #     'PORT': '',                 # Leave empty for default port (5432)
+    # }
 }
 AUTH_USER_MODEL = 'users_service.User'
 
