@@ -60,3 +60,8 @@ setup course reg  table M2m
 
 setup  authentication for users get a token
 install pip install djangorestframework-simplejwt
+
+
+Creating message service
+
+using django channels, redis, daphane as asgi server

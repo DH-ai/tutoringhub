@@ -1,9 +1,32 @@
-from rest_framework import viewsets
-from .models import User
-from .serializers import UserSerializer
+# users_service/views.py
 
+
+from rest_framework import viewsets, status
+from .models import User
+from .serializers import SignupSerializer, UserSerializer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+class SignupView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = SignupSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        # `serializer.data` now contains access & refresh
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    GET    /api/users/         → list users
+    POST   /api/users/         → create user
+    GET    /api/users/{pk}/    → retrieve user
+    PUT    /api/users/{pk}/    → replace user
+    PATCH  /api/users/{pk}/    → partial update
+    DELETE /api/users/{pk}/    → delete user
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'username'
-    
+    permission_classes = [IsAuthenticated]

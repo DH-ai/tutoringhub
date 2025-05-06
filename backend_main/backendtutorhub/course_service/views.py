@@ -7,11 +7,12 @@ from rest_framework.exceptions import PermissionDenied
 class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    def perform_create(self, serializer):
-        if (self.request.user.role != 'teacher' or self.request.user.role != 'Teacher' ):
-            # Stop here with a 403, so students can’t create courses
-            raise PermissionDenied("Only teachers can create courses.")
-        serializer.save(teacher=self.request.user)
+    
+    # def perform_create(self, serializer):
+    #     if (self.request.user.role != 'teacher' or self.request.user.role != 'Teacher' ):
+    #         # Stop here with a 403, so students can’t create courses
+    #         raise PermissionDenied("Only teachers can create courses.")
+    #     serializer.save(teacher=self.request.user)
 
   
 

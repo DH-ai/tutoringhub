@@ -31,16 +31,22 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'users_service',
+    'course_service',
+    'channels',
+    'message_service',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users_service',
-    'course_service'
 ]
 INSTALLED_APPS += ['rest_framework','rest_framework_simplejwt',]
+
+ASGI_APPLICATION = 'backendtutorhub.asgi.application'
+
 
 
 MIDDLEWARE = [
@@ -55,7 +61,7 @@ MIDDLEWARE = [
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=240),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
@@ -88,6 +94,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backendtutorhub.wsgi.application'
 
+
+# Channel Layer configuration
+# Using Redis as the channel layer
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)], # Replace with your Redis host and port if different
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
