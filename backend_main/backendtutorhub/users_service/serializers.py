@@ -29,7 +29,7 @@ class SignupSerializer(serializers.ModelSerializer):
         
         
 
-        return validated_data
+        return user
 
     def to_representation(self, instance):
         """
@@ -39,6 +39,7 @@ class SignupSerializer(serializers.ModelSerializer):
         print(data)
         # attach tokens that were set on validated_data during create()
         return {
+            'id': data['id'],
             'username': data['username'],
             'email': data.get('email'),
             'role': data.get('role'),
