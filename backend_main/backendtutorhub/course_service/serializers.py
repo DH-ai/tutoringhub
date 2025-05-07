@@ -9,6 +9,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_teacher(self, value):
+        print("--->", value)
         if value.role != 'teacher':
             raise serializers.ValidationError("Only users with role='teacher' can be assigned as course creators.")
         return value
