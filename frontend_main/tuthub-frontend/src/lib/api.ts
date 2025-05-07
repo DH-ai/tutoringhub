@@ -11,10 +11,6 @@ interface Course {
   description: string;
   teacher: number;
   linktoplaylist?: string;
-  category?: string;
-  level?: string;
-  thumbnailUrl?: string;
-  price?: number;
   students?: any[];
 }
 

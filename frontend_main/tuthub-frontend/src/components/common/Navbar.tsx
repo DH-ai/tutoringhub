@@ -82,9 +82,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {authState.isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <Link href="/messages" className="text-muted-foreground hover:text-foreground transition-colors">
-                Messages
-              </Link>
+
               <div className="relative">
                 <Button 
                   variant="ghost" 
