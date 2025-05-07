@@ -39,5 +39,5 @@ class PublicUserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = PublicUserSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['username','role',]  # or any fields you want
+    filterset_fields = ['username','role','id']  # or any fields you want
     permission_classes = []  # allow any
