@@ -9,12 +9,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import API_BASE_URL from '@/config';
 import { toast } from 'sonner';
+import { useTuthub } from '@/providers/TuthubProvider';
 
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
   const [teacherCourses, setTeacherCourses] = useState<{[key: string]: number}>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const { authState } = useTuthub();
 
   // Fetch teachers and their courses on component mount
   useEffect(() => {
@@ -32,7 +34,11 @@ const TeachersPage = () => {
       setTeachers(teachersData);
 
       // Fetch all courses
-      const coursesResponse = await fetch(`${API_BASE_URL}/api/courses/`);
+      const coursesResponse = await fetch(`${API_BASE_URL}/api/courses/`, {
+        headers: {
+          'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+        }
+      });
       if (!coursesResponse.ok) {
         throw new Error('Failed to fetch courses');
       }
