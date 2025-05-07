@@ -27,6 +27,12 @@ class CourseRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseRegistration
         fields = ['id','student', 'course', 'registered_at']
+    
+    def get_queryset(self):
+        # Return only registrations by the current user
+        return CourseRegistration.objects.filter(student=self.request.user)
+
+
     def create(self, validated_data):
                 # Get the authenticated user from the request context
         # The request object is automatically added to the serializer context

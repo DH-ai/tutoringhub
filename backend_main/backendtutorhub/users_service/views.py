@@ -26,14 +26,14 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     GET    /api/users/         → list users
     POST   /api/users/         → create user
-    GET    /api/users/{pk}/   → retrieve user
-    PUT    /api/users/{pk}/   → replace user
-    PATCH  /api/users/{pk}/   → partial update
-    DELETE /api/users/{pk}/   → delete user
+    GET    /api/users/{pk}/    → retrieve user
+    PUT    /api/users/{pk}/    → replace user
+    PATCH  /api/users/{pk}/    → partial update
+    DELETE /api/users/{pk}/    → delete user
     """
     queryset = User.objects.all()
-    
     lookup_field = 'username'
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 class PublicUserListView(ListAPIView):
     queryset = User.objects.all()
