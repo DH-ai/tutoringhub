@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']# for testing will change
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = ['https://tutoringhub-eight.vercel.app/']
 CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
