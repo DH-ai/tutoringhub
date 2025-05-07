@@ -17,6 +17,7 @@ interface CourseCardProps {
   };
   linktoplaylist?: string;
   isEnrolled?: boolean;
+  isEnrolling?: boolean;
   onEnroll?: () => void;
 }
 
@@ -27,6 +28,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   teacher,
   linktoplaylist,
   isEnrolled = false,
+  isEnrolling = false,
   onEnroll,
 }) => {
   // Truncate description if it's too long
@@ -57,25 +59,31 @@ const CourseCard: React.FC<CourseCardProps> = ({
           </Link>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between border-t pt-4">
+      <CardFooter className="flex justify-between items-center pt-4">
         {linktoplaylist && (
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild>
             <Link href={linktoplaylist} target="_blank" rel="noopener noreferrer">
               <FaYoutube className="mr-2" />
-              Watch Playlist
+              Watch
             </Link>
           </Button>
         )}
-        {!isEnrolled && onEnroll && (
-          <Button onClick={onEnroll} size="sm">Enroll Now</Button>
-        )}
-        {isEnrolled && (
-          <Button variant="secondary" size="sm" asChild>
-            <Link href={`/courses/${id}`}>
-              View Course
-            </Link>
-          </Button>
-        )}
+        <Button
+          onClick={onEnroll}
+          disabled={isEnrolled || isEnrolling}
+          className="ml-auto"
+        >
+          {isEnrolling ? (
+            <>
+              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+              Enrolling...
+            </>
+          ) : isEnrolled ? (
+            'Enrolled'
+          ) : (
+            'Enroll'
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );

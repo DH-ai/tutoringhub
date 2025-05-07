@@ -26,15 +26,26 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     GET    /api/users/         → list users
     POST   /api/users/         → create user
-    GET    /api/users/{pk}/    → retrieve user
-    PUT    /api/users/{pk}/    → replace user
-    PATCH  /api/users/{pk}/    → partial update
-    DELETE /api/users/{pk}/    → delete user
+    GET    /api/users/{pk}/   → retrieve user
+    PUT    /api/users/{pk}/   → replace user
+    PATCH  /api/users/{pk}/   → partial update
+    DELETE /api/users/{pk}/   → delete user
     """
     queryset = User.objects.all()
-    lookup_field = 'username'
-    serializer_class = UserSerializer
+    
     permission_classes = [IsAuthenticated]
+    def get_object(self):
+        lookup_value = self.kwargs["pk"]  # 'pk' is the default route var
+        queryset = self.get_queryset()
+
+        # Try to match by UUID or username
+        obj = get_object_or_404(
+            queryset,
+            Q(id=lookup_value) | Q(username=lookup_value)
+        )
+
+        self.check_object_permissions(self.request, obj)
+        return obj
 class PublicUserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = PublicUserSerializer

@@ -5,12 +5,37 @@ import { FaSearch, FaFilter } from 'react-icons/fa';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CourseCard from '@/components/course/CourseCard';
-import { MockData } from '@/lib/api';
+import { useTuthub } from '@/providers/TuthubProvider';
+import { toast } from 'sonner';
+import API_BASE_URL from '@/config';
 
 const CoursesPage = () => {
-  const [courses, setCourses] = useState(MockData.courses);
+  const { authState } = useTuthub();
+  const [courses, setCourses] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [enrolling, setEnrolling] = useState<number | null>(null);
+
+  // Fetch courses on component mount
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/courses/public`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      const data = await response.json();
+      setCourses(data);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      toast.error('Failed to load courses');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to handle search
   const handleSearch = (e: React.FormEvent) => {
@@ -20,18 +45,76 @@ const CoursesPage = () => {
     
     // Filter courses based on search query
     if (searchQuery.trim()) {
-      const filtered = MockData.courses.filter(
+      const filtered = courses.filter(
         course => 
           course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           course.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setCourses(filtered);
     } else {
-      // If search query is empty, show all courses
-      setCourses(MockData.courses);
+      // If search query is empty, fetch all courses again
+      fetchCourses();
     }
     
     setLoading(false);
+  };
+
+  // Handle course enrollment
+  const handleEnroll = async (courseId: number) => {
+    if (!authState.isAuthenticated) {
+      toast.error('Please sign in to enroll in courses');
+      return;
+    }
+
+    setEnrolling(courseId);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/registrations/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authState.token}`
+        },
+        body: JSON.stringify({
+          user: authState.user?.id,
+          course: courseId
+        })
+      });
+      
+      if (!response.ok) {
+        let errorMessage = 'Failed to enroll in course';
+        try {
+          const errorData = await response.json();
+          // Handle Django validation error format
+          if (Array.isArray(errorData)) {
+            errorMessage = errorData[0];
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (parseError) {
+          // If response is not JSON, try to get text
+          try {
+            const textError = await response.text();
+            if (textError) {
+              errorMessage = textError;
+            }
+          } catch (textError) {
+            console.error('Error reading error response:', textError);
+          }
+        }
+        throw new Error(errorMessage);
+      }
+      
+      toast.success('Successfully enrolled in the course!');
+      // Optionally refresh the courses list to update enrollment status
+      fetchCourses();
+    } catch (error) {
+      console.error('Error enrolling in course:', error);
+      // Show the specific error message from the backend
+      toast.error(error instanceof Error ? error.message : 'Failed to enroll in course');
+    } finally {
+      setEnrolling(null);
+    }
   };
 
   // Reset search when component unmounts
@@ -88,23 +171,21 @@ const CoursesPage = () => {
           </div>
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => {
-              const teacherData = MockData.users.find(user => user.id === course.teacher);
-              return (
-                <CourseCard
-                  key={course.id}
-                  id={course.id}
-                  title={course.title}
-                  description={course.description}
-                  teacher={{
-                    id: teacherData?.id || 0,
-                    username: teacherData?.username || 'Unknown Teacher',
-                  }}
-                  linktoplaylist={course.linktoplaylist}
-                  onEnroll={() => {/* Would handle enrollment logic here */}}
-                />
-              );
-            })}
+            {courses.map((course) => (
+              <CourseCard
+                key={course.id}
+                id={course.id}
+                title={course.title}
+                description={course.description}
+                teacher={{
+                  id: course.teacher,
+                  username: course.teacher_username || 'Unknown Teacher',
+                }}
+                linktoplaylist={course.linktoplaylist}
+                onEnroll={() => handleEnroll(course.id)}
+                isEnrolling={enrolling === course.id}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center py-12 bg-muted/30 rounded-lg">
@@ -114,7 +195,7 @@ const CoursesPage = () => {
             </p>
             <Button onClick={() => {
               setSearchQuery('');
-              setCourses(MockData.courses);
+              fetchCourses();
             }}>
               Clear Search
             </Button>

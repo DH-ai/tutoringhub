@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTuthub } from '@/providers/TuthubProvider';
 import { MockData } from '@/lib/api';
+import API_BASE_URL from '@/config';
 
 export default function EditCoursePage() {
   const router = useRouter();
@@ -22,11 +23,7 @@ export default function EditCoursePage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
     linktoplaylist: '',
-    thumbnailUrl: '',
-    price: '0',
-    level: 'beginner'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,34 +36,40 @@ export default function EditCoursePage() {
       return;
     }
 
-    // Load course data - would be an API call in a real app
-    const course = MockData.courses.find(c => c.id === courseId);
+    const fetchCourse = async () => {
+      try {
+        // Fetch course data from the API
+        const response = await fetch(`${API_BASE_URL}/api/courses/${courseId}`, {
+          headers: {
+            'Authorization': `Bearer ${authState.token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Course not found');
+        }
+        
+        const course = await response.json();
+        
+        // Check if the logged-in teacher owns this course
+        if (course.teacher !== authState.user?.id) {
+          throw new Error('You do not have permission to edit this course');
+        }
+        
+        // Set form data with course information
+        setFormData({
+          title: course.title,
+          description: course.description,
+          linktoplaylist: course.linktoplaylist || '',
+        });
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'An error occurred');
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    if (!course) {
-      setError('Course not found');
-      setIsLoading(false);
-      return;
-    }
-
-    // Check if the logged-in teacher owns this course
-    if (course.teacher !== authState.user?.id) {
-      setError('You do not have permission to edit this course');
-      setIsLoading(false);
-      return;
-    }
-
-    // Set form data with course information
-    setFormData({
-      title: course.title,
-      description: course.description,
-      category: course.category || '',
-      linktoplaylist: course.linktoplaylist || '',
-      thumbnailUrl: course.thumbnailUrl || '',
-      price: String(course.price || 0),
-      level: course.level || 'beginner'
-    });
-    
-    setIsLoading(false);
+    fetchCourse();
   }, [courseId, authState, router]);
 
   const handleChange = (
@@ -93,18 +96,24 @@ export default function EditCoursePage() {
 
     try {
       // Validate form
-      if (!formData.title || !formData.description || !formData.category) {
+      if (!formData.title || !formData.description) {
         throw new Error('Please fill in all required fields');
       }
 
-      // In a real app, this would be an API call to update course
-      console.log('Course data to update:', {
-        id: courseId,
-        ...formData
+      // Make API call to update course
+      const response = await fetch(`${API_BASE_URL}/api/courses/${courseId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authState.token}`
+        },
+        body: JSON.stringify(formData)
       });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update course');
+      }
       
       // Success - redirect to dashboard
       router.push('/dashboard');
@@ -198,49 +207,6 @@ export default function EditCoursePage() {
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select 
-                    value={formData.category}
-                    onValueChange={(value) => handleSelectChange('category', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="programming">Programming</SelectItem>
-                      <SelectItem value="design">Design</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                      <SelectItem value="marketing">Marketing</SelectItem>
-                      <SelectItem value="finance">Finance</SelectItem>
-                      <SelectItem value="health">Health</SelectItem>
-                      <SelectItem value="music">Music</SelectItem>
-                      <SelectItem value="photography">Photography</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="level">Difficulty Level</Label>
-                  <Select 
-                    value={formData.level}
-                    onValueChange={(value) => handleSelectChange('level', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">Beginner</SelectItem>
-                      <SelectItem value="intermediate">Intermediate</SelectItem>
-                      <SelectItem value="advanced">Advanced</SelectItem>
-                      <SelectItem value="all">All Levels</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="linktoplaylist">Video Playlist URL</Label>
                 <Input
@@ -253,31 +219,6 @@ export default function EditCoursePage() {
                 <p className="text-sm text-muted-foreground">
                   Provide a playlist link to your course videos (YouTube, Vimeo, etc.)
                 </p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="thumbnailUrl">Thumbnail Image URL</Label>
-                <Input
-                  id="thumbnailUrl"
-                  name="thumbnailUrl"
-                  placeholder="e.g., https://example.com/thumbnail.jpg"
-                  value={formData.thumbnailUrl}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="price">Price ($)</Label>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00 for free courses"
-                  value={formData.price}
-                  onChange={handleChange}
-                />
               </div>
               
               <div className="flex justify-end gap-4 pt-4">

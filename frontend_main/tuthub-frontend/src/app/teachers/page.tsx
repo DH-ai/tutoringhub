@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MockData } from '@/lib/api';
+import API_BASE_URL from '@/config';
+import { toast } from 'sonner';
 
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -16,32 +17,39 @@ const TeachersPage = () => {
 
   // Fetch teachers on component mount
   useEffect(() => {
-    // Simulating API call with mock data
-    setLoading(true);
-    
-    // Filter only teachers from mock data
-    const teachersList = MockData.users.filter(user => user.role === 'teacher');
-    setTeachers(teachersList);
-    
-    setLoading(false);
+    fetchTeachers();
   }, []);
+
+  const fetchTeachers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/users/public/?role=teacher`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch teachers');
+      }
+      const data = await response.json();
+      setTeachers(data);
+    } catch (error) {
+      console.error('Error fetching teachers:', error);
+      toast.error('Failed to load teachers');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to handle search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (searchQuery.trim()) {
-      const teachersList = MockData.users.filter(
-        user => 
-          user.role === 'teacher' && 
-          (user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (user.bio && user.bio.toLowerCase().includes(searchQuery.toLowerCase())))
+      const filtered = teachers.filter(
+        teacher => 
+          teacher.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (teacher.bio && teacher.bio.toLowerCase().includes(searchQuery.toLowerCase()))
       );
-      setTeachers(teachersList);
+      setTeachers(filtered);
     } else {
-      // If search query is empty, show all teachers
-      const teachersList = MockData.users.filter(user => user.role === 'teacher');
-      setTeachers(teachersList);
+      // If search query is empty, fetch all teachers again
+      fetchTeachers();
     }
   };
 
@@ -94,7 +102,7 @@ const TeachersPage = () => {
         ) : teachers.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {teachers.map((teacher) => (
-              <Card key={teacher.id} className="hover:shadow-md transition-shadow">
+              <Card key={teacher.username} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
@@ -105,7 +113,7 @@ const TeachersPage = () => {
                     <div>
                       <CardTitle className="text-xl">
                         <Link 
-                          href={`/teachers/${teacher.id}`}
+                          href={`/teachers/${teacher.username}`}
                           className="hover:text-primary transition-colors"
                         >
                           {teacher.username}
@@ -142,7 +150,7 @@ const TeachersPage = () => {
                 <CardFooter className="border-t pt-4">
                   <div className="flex gap-2 w-full">
                     <Button variant="outline" className="flex-1" asChild>
-                      <Link href={`/teachers/${teacher.id}`}>
+                      <Link href={`/teachers/${teacher.username}`}>
                         <FaUser className="mr-2" />
                         View Profile
                       </Link>
@@ -160,8 +168,7 @@ const TeachersPage = () => {
             </p>
             <Button onClick={() => {
               setSearchQuery('');
-              const teachersList = MockData.users.filter(user => user.role === 'teacher');
-              setTeachers(teachersList);
+              fetchTeachers();
             }}>
               Clear Search
             </Button>

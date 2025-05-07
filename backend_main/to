@@ -1,7 +1,6 @@
-1. course created endpoint for me to see my registered course/
-2. messages fuck krna hai
-3. frontend integerate with backend
-4.vercel wagera pe backend move krna hai 
-7. showing number of register students to teacher
-8. teacher can kick student out
-10. student tab listing students registered under the course
+1. courses tab me jao to actual courses aaye
+2. teachers me jao to actual teachers aaye
+3. dashboard me jb me view me click kroo to bs course dikh jaye bada bada
+4. edit pe bs ek patch request hi krnihai
+5. profile pe jao to dikhe courses jinko mene reg kr rakaha hai
+6. i can delete my registrations from there only

@@ -3,55 +3,61 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { FaEnvelope, FaArrowLeft, FaChalkboardTeacher } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import CourseCard from '@/components/course/CourseCard';
-import { MockData } from '@/lib/api';
 import { useTuthub } from '@/providers/TuthubProvider';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/config';
 
 const TeacherDetailPage = () => {
   const params = useParams();
-  const teacherId = Number(params.id);
+  const username = params.id as string;
   const { authState } = useTuthub();
   
   const [teacher, setTeacher] = useState<any>(null);
   const [teacherCourses, setTeacherCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching teacher details and their courses
   useEffect(() => {
-    const fetchTeacherData = () => {
+    const fetchTeacherData = async () => {
       setLoading(true);
       
-      // Find the teacher in mock data
-      const foundTeacher = MockData.users.find(user => user.id === teacherId);
-      
-      if (foundTeacher) {
-        setTeacher(foundTeacher);
+      try {
+        // Fetch teacher data using username
+        const teacherResponse = await fetch(`${API_BASE_URL}/api/users/users/${username}/`);
+        if (!teacherResponse.ok) {
+          throw new Error('Failed to fetch teacher data');
+        }
+        const teacherData = await teacherResponse.json();
+        setTeacher(teacherData);
         
-        // Find courses taught by this teacher
-        const courses = MockData.courses.filter(course => course.teacher === teacherId);
-        setTeacherCourses(courses);
+        // Fetch teacher's courses
+        const coursesResponse = await fetch(`${API_BASE_URL}/api/courses/`, {
+          headers: {
+            'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+          }
+        });
+        
+        if (!coursesResponse.ok) {
+          throw new Error('Failed to fetch courses');
+        }
+        
+        const coursesData = await coursesResponse.json();
+        // Filter courses for this teacher using username
+        const teacherCourses = coursesData.filter((course: any) => course.teacher === username);
+        setTeacherCourses(teacherCourses);
+      } catch (error) {
+        console.error('Error fetching teacher data:', error);
+        toast.error('Failed to load teacher data');
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
     
     fetchTeacherData();
-  }, [teacherId]);
-
-  // Handle sending a message to the teacher
-  const handleContactTeacher = () => {
-    if (!authState.isAuthenticated) {
-      toast.error('Please sign in to contact the teacher');
-      return;
-    }
-
-    // In a real app, this would navigate to the messages page with this teacher
-    toast.success('Message feature would open here');
-  };
+  }, [username, authState]);
 
   if (loading) {
     return (
@@ -108,14 +114,9 @@ const TeacherDetailPage = () => {
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold">{teacher.username}</h1>
                   <div className="flex items-center gap-1 text-muted-foreground mt-1">
-                    <FaChalkboardTeacher />
                     <span>Teacher</span>
                   </div>
                 </div>
-                <Button onClick={handleContactTeacher} className="w-full md:w-auto">
-                  <FaEnvelope className="mr-2" />
-                  Contact Teacher
-                </Button>
               </div>
 
               <div className="mb-6">
@@ -125,23 +126,10 @@ const TeacherDetailPage = () => {
                 </p>
               </div>
 
-              {/* For demo purposes, adding some fictional stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-muted/30 p-4 rounded text-center">
                   <div className="font-semibold text-2xl text-foreground">{teacherCourses.length}</div>
                   <div className="text-muted-foreground">Courses</div>
-                </div>
-                <div className="bg-muted/30 p-4 rounded text-center">
-                  <div className="font-semibold text-2xl text-foreground">{Math.floor(Math.random() * 100) + 20}</div>
-                  <div className="text-muted-foreground">Students</div>
-                </div>
-                <div className="bg-muted/30 p-4 rounded text-center">
-                  <div className="font-semibold text-2xl text-foreground">{Math.floor(Math.random() * 1000) + 100}</div>
-                  <div className="text-muted-foreground">Enrollments</div>
-                </div>
-                <div className="bg-muted/30 p-4 rounded text-center">
-                  <div className="font-semibold text-2xl text-foreground">{(Math.random() * 2 + 3).toFixed(1)}</div>
-                  <div className="text-muted-foreground">Rating</div>
                 </div>
               </div>
             </div>
@@ -161,7 +149,7 @@ const TeacherDetailPage = () => {
                   title={course.title}
                   description={course.description}
                   teacher={{
-                    id: teacher.id,
+                    id: teacher.username,
                     username: teacher.username,
                   }}
                   linktoplaylist={course.linktoplaylist}

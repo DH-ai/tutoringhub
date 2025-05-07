@@ -184,10 +184,6 @@ export const MockData = {
       description: 'Learn the basics of HTML, CSS, and JavaScript to build modern websites.',
       teacher: 1,
       linktoplaylist: 'https://www.youtube.com/playlist?list=abc123',
-      category: 'programming',
-      level: 'beginner',
-      thumbnailUrl: 'https://example.com/web-dev.jpg',
-      price: 0,
       students: []
     },
     {
@@ -196,10 +192,6 @@ export const MockData = {
       description: 'Master React hooks, context API, and performance optimization.',
       teacher: 2,
       linktoplaylist: 'https://www.youtube.com/playlist?list=def456',
-      category: 'programming',
-      level: 'advanced',
-      thumbnailUrl: 'https://example.com/react.jpg',
-      price: 29.99,
       students: []
     },
     {
@@ -208,10 +200,6 @@ export const MockData = {
       description: 'Learn Python programming for data analysis and visualization.',
       teacher: 3,
       linktoplaylist: 'https://www.youtube.com/playlist?list=ghi789',
-      category: 'data',
-      level: 'intermediate',
-      thumbnailUrl: 'https://example.com/python.jpg',
-      price: 19.99,
       students: []
     }
   ],
