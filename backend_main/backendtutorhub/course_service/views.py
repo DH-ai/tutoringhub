@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny
 class CourseListView(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
     
     # def perform_create(self, serializer):
     #     if (self.request.user.role != 'teacher' or self.request.user.role != 'Teacher' ):
