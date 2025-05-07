@@ -12,6 +12,11 @@ class CourseSerializer(serializers.ModelSerializer):
         if value.role != 'teacher':
             raise serializers.ValidationError("Only users with role='teacher' can be assigned as course creators.")
         return value
+    
+    def create(self, validated_data):
+        teacher = self.context['request'].user
+        validated_data['teacher'] = teacher
+        return super().create(validated_data)
 
 
 # Serializer for CourseRegistration model
