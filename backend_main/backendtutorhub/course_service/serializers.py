@@ -16,6 +16,7 @@ class CourseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         teacher = self.context['request'].user
         validated_data['teacher'] = teacher
+        print(teacher)
         return super().create(validated_data)
 
 
