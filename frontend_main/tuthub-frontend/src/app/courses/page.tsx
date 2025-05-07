@@ -23,7 +23,11 @@ const CoursesPage = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/courses/public`);
+      const response = await fetch(`${API_BASE_URL}/api/courses/public`, {
+        headers: {
+          'Authorization': authState.token ? `Bearer ${authState.token}` : '',
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }

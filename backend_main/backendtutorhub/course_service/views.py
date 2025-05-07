@@ -25,16 +25,16 @@ class CourseListView(generics.ListCreateAPIView):
         # Ensure the user is authenticated.
         # The IsAuthenticated permission class already handles unauthenticated access,
         # but this check is good practice when accessing self.request.user.
-        return Course.objects.filter(teacher=self.request.user)
-        # if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated:
+            return Course.objects.filter(teacher=self.request.user)
         #     # Filter the Course objects to only include those
         #     # where the 'teacher' field (or whatever you named the ForeignKey
         #     # to the User model in your Course model) is the current authenticated user.
         #     # Replace 'teacher' if your ForeignKey field has a different name.
-        # else:
-        #     # If for some reason an unauthenticated user reaches here (shouldn't
-        #     # happen with IsAuthenticated), return an empty queryset.
-        #     return Course.objects.none()
+        else:
+            # If for some reason an unauthenticated user reaches here (shouldn't
+            # happen with IsAuthenticated), return an empty queryset.
+            return Course.objects.none()
 
 
   
