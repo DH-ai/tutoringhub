@@ -14,8 +14,7 @@ class CourseListView(generics.ListCreateAPIView):
     #         # Stop here with a 403, so students can’t create courses
     #         raise PermissionDenied("Only teachers can create courses.")
     #     serializer.save(teacher=self.request.user)
-    def perform_create(self, serializer):
-        serializer.save(teacher=self.request.user)
+
     def get_queryset(self):
         """
         This method is called by the view to get the queryset of Course objects
