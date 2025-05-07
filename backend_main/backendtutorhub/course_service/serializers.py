@@ -55,7 +55,7 @@ class CourseRegistrationSerializer(serializers.ModelSerializer):
             student=student,
             course=course
         )
-
+        print(course_registration)
         return course_registration
 
 
