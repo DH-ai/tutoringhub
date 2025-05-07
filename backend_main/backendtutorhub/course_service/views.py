@@ -70,10 +70,20 @@ class CourseRegistrationView(generics.ListCreateAPIView):
     #     # Automatically set the student (assuming the user is logged in)
     #     serializer.save(student=self.request.user)
 
+    def get_queryset(self):
+        # only registrations for the logged-in student
+        return CourseRegistration.objects.filter(student=self.request.user)
+
+
+
 class CourseRegistrationDetailView(generics.RetrieveDestroyAPIView):
     queryset = CourseRegistration.objects.all()
     serializer_class = CourseRegistrationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+    # ensure students can only fetch/destroy their own registrations
+        return CourseRegistration.objects.filter(student=self.request.user)
 
 class CoursePublicListView(generics.ListAPIView):
     queryset = Course.objects.all()
