@@ -38,7 +38,6 @@ class SignupSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         # attach tokens that were set on validated_data during create()
         return {
-            'id': instance.id,
             'username': data['username'],
             'email': data.get('email'),
             'role': data.get('role'),
