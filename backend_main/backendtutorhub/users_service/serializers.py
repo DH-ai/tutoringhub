@@ -36,6 +36,7 @@ class SignupSerializer(serializers.ModelSerializer):
         Include access & refresh in the response
         """
         data = super().to_representation(instance)
+        print(instance)
         # attach tokens that were set on validated_data during create()
         return {
             'username': data['username'],
