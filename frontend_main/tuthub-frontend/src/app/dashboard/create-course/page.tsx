@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTuthub } from '@/providers/TuthubProvider';
+import API_BASE_URL from '@/config';
 
 export default function CreateCoursePage() {
   const router = useRouter();
@@ -62,15 +63,13 @@ export default function CreateCoursePage() {
 
       const userData = localStorage.getItem("tuthub_user");
       // Make API call to the backend
-      const response = await fetch('http://127.0.0.1:8000/api/courses/', {
+      const response = await fetch(`${API_BASE_URL}/api/courses/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authState.token}`
         },
         body: JSON.stringify(formData)
-
-
       });
 
       if (!response.ok) {

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { MockData } from '@/lib/api';
 import { useTuthub } from '@/providers/TuthubProvider';
 import { toast } from 'sonner';
+import API_BASE_URL from '@/config';
 
 const CourseDetailPage = () => {
   const params = useParams();
@@ -26,9 +27,9 @@ const CourseDetailPage = () => {
       
       try {
         // Fetch course data from the API
-        const courseResponse = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}`, {
+        const courseResponse = await fetch(`${API_BASE_URL}/api/courses/${courseId}`, {
           headers: {
-            'Authorization': authState.token `Bearer ${authState.token}` : '',
+            'Authorization': authState.token ? `Bearer ${authState.token}` : '',
           }
         });
         
@@ -41,7 +42,7 @@ const CourseDetailPage = () => {
         
         // Fetch teacher data if needed
         if (courseData.teacher) {
-          const teacherResponse = await fetch(`http://127.0.0.1:8000/api/users/${courseData.teacher}`, {
+          const teacherResponse = await fetch(`${API_BASE_URL}/api/users/${courseData.teacher}`, {
             headers: {
               'Authorization': authState.token ? `Bearer ${authState.token}` : '',
             }
@@ -56,7 +57,7 @@ const CourseDetailPage = () => {
         // Check if user is enrolled
         if (authState.isAuthenticated && authState.user) {
           // You'll need to implement this endpoint on your backend
-          const enrollmentResponse = await fetch(`http://127.0.0.1:8000/api/enrollments/check/?user=${authState.user.id}&course=${courseId}`, {
+          const enrollmentResponse = await fetch(`${API_BASE_URL}/api/enrollments/check/?user=${authState.user.id}&course=${courseId}`, {
             headers: {
               'Authorization': `Bearer ${authState.token}`,
             }
@@ -88,7 +89,7 @@ const CourseDetailPage = () => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/enrollments/', {
+      const response = await fetch(`${API_BASE_URL}/api/enrollments/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

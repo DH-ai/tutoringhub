@@ -1,7 +1,8 @@
 import axios from 'axios';
+import API_BASE_URL from '@/config';
 
 // API base URL
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${API_BASE_URL}/api`;
 
 // Define types for our API data
 interface Course {

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "@/config";
 
 // Define types for our context
 type User = {
@@ -31,7 +32,7 @@ type TuthubContextType = {
 const TuthubContext = createContext<TuthubContextType | undefined>(undefined);
 
 // API base URL - would come from environment variable in production
-const API_URL = "http://localhost:8000/api";
+const API_URL = `${API_BASE_URL}/api`;
 
 export const TuthubProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({

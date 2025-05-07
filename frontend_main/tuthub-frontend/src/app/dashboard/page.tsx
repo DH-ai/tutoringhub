@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTuthub } from '@/providers/TuthubProvider';
 import { MockData } from '@/lib/api';
+import API_BASE_URL from '@/config';
 
 export default function TeacherDashboard() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function TeacherDashboard() {
   useEffect(() => {
     const fetchTeacherCourses = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/courses/', {
+        const response = await fetch(`${API_BASE_URL}/api/courses/`, {
           headers: {
             'Authorization': `Bearer ${authState.token}`
           }
@@ -67,7 +68,7 @@ export default function TeacherDashboard() {
   // Function to handle course deletion
   const handleDeleteCourse = async (courseId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/courses/${courseId}/`, {
+      const response = await fetch(`${API_BASE_URL}/api/courses/${courseId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${authState.token}`
