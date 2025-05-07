@@ -24,8 +24,8 @@ class SignupSerializer(serializers.ModelSerializer):
 
         # Issue JWT tokens
         tokens = RefreshToken.for_user(user)
-        validated_data['access'] = str(tokens.access_token)
-        validated_data['refresh'] = str(tokens)
+        user.access = str(tokens.access_token)
+        user.refresh = str(tokens)
         
         
 
@@ -36,7 +36,7 @@ class SignupSerializer(serializers.ModelSerializer):
         Include access & refresh in the response
         """
         data = super().to_representation(instance)
-        print(data)
+        # print(data)
         # attach tokens that were set on validated_data during create()
         return {
             'id': data['id'],
