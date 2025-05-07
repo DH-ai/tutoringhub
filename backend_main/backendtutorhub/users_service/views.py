@@ -33,19 +33,8 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     
+    lookup_field = 'username'
     permission_classes = [IsAuthenticated]
-    def get_object(self):
-        lookup_value = self.kwargs["pk"]  # 'pk' is the default route var
-        queryset = self.get_queryset()
-
-        # Try to match by UUID or username
-        obj = get_object_or_404(
-            queryset,
-            Q(id=lookup_value) | Q(username=lookup_value)
-        )
-
-        self.check_object_permissions(self.request, obj)
-        return obj
 class PublicUserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = PublicUserSerializer

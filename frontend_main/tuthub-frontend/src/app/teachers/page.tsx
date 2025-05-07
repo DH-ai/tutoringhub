@@ -12,24 +12,44 @@ import { toast } from 'sonner';
 
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [teacherCourses, setTeacherCourses] = useState<{[key: string]: number}>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Fetch teachers on component mount
+  // Fetch teachers and their courses on component mount
   useEffect(() => {
     fetchTeachers();
   }, []);
 
   const fetchTeachers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/users/public/?role=teacher`);
-      if (!response.ok) {
+      // Fetch teachers
+      const teachersResponse = await fetch(`${API_BASE_URL}/api/users/users/public/?role=teacher`);
+      if (!teachersResponse.ok) {
         throw new Error('Failed to fetch teachers');
       }
-      const data = await response.json();
-      setTeachers(data);
+      const teachersData = await teachersResponse.json();
+      setTeachers(teachersData);
+
+      // Fetch all courses
+      const coursesResponse = await fetch(`${API_BASE_URL}/api/courses/`);
+      if (!coursesResponse.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      const coursesData = await coursesResponse.json();
+
+      // Count courses for each teacher
+      const courseCounts: {[key: string]: number} = {};
+      coursesData.forEach((course: any) => {
+        if (course.teacher in courseCounts) {
+          courseCounts[course.teacher]++;
+        } else {
+          courseCounts[course.teacher] = 1;
+        }
+      });
+      setTeacherCourses(courseCounts);
     } catch (error) {
-      console.error('Error fetching teachers:', error);
+      console.error('Error fetching data:', error);
       toast.error('Failed to load teachers');
     } finally {
       setLoading(false);
@@ -131,19 +151,12 @@ const TeachersPage = () => {
                     {teacher.bio || 'No bio available'}
                   </p>
                   
-                  {/* For demo purposes, adding some fictional stats */}
-                  <div className="grid grid-cols-3 gap-2 mt-4 text-center text-sm">
-                    <div className="bg-muted/30 p-2 rounded">
-                      <div className="font-semibold text-foreground">{Math.floor(Math.random() * 10) + 1}</div>
+                  <div className="mt-4 text-center">
+                    <div className="bg-muted/30 p-2 rounded inline-block">
+                      <div className="font-semibold text-foreground">
+                        {teacherCourses[teacher.username] || 0}
+                      </div>
                       <div className="text-muted-foreground">Courses</div>
-                    </div>
-                    <div className="bg-muted/30 p-2 rounded">
-                      <div className="font-semibold text-foreground">{Math.floor(Math.random() * 100) + 20}</div>
-                      <div className="text-muted-foreground">Students</div>
-                    </div>
-                    <div className="bg-muted/30 p-2 rounded">
-                      <div className="font-semibold text-foreground">{Math.floor(Math.random() * 5) + 1}/{5}</div>
-                      <div className="text-muted-foreground">Rating</div>
                     </div>
                   </div>
                 </CardContent>

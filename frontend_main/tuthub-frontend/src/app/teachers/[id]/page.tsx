@@ -25,13 +25,18 @@ const TeacherDetailPage = () => {
       setLoading(true);
       
       try {
-        // Fetch teacher data using username
-        const teacherResponse = await fetch(`${API_BASE_URL}/api/users/users/${username}/`);
+        // Fetch teacher data using public endpoint with username
+        const teacherResponse = await fetch(`${API_BASE_URL}/api/users/users/public/?username=${username}`);
         if (!teacherResponse.ok) {
           throw new Error('Failed to fetch teacher data');
         }
         const teacherData = await teacherResponse.json();
-        setTeacher(teacherData);
+        // Since the response is an array, take the first item
+        if (teacherData && teacherData.length > 0) {
+          setTeacher(teacherData[0]);
+        } else {
+          throw new Error('Teacher not found');
+        }
         
         // Fetch teacher's courses
         const coursesResponse = await fetch(`${API_BASE_URL}/api/courses/`, {
